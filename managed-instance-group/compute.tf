@@ -5,6 +5,11 @@ resource "google_compute_http_health_check" "compute" {
   port = "${var.service_port}"
 }
 
+data "google_compute_image" "image" {
+  family  = "centos-7"
+  project = "centos-cloud"
+}
+
 resource "google_compute_instance_template" "compute" {
   name_prefix = "compute-"
 
@@ -41,7 +46,7 @@ resource "google_compute_instance_template" "compute" {
     ]
   }
 
-  metadata {
+  metadata = {
     startup-script = "${file("${path.module}/scripts/compute.sh")}"
   }
 
@@ -55,12 +60,17 @@ resource "google_compute_instance_group_manager" "compute" {
   description = "compute VM Instance Group"
 
   base_instance_name = "${var.mig_name}-compute"
-
-  instance_template = "${google_compute_instance_template.compute.self_link}"
-
+  version {
+    instance_template = "${google_compute_instance_template.compute.self_link}"
+  }
   zone = "${var.zone}"
-
-  update_strategy = "RESTART"
+  update_policy {
+    type                  = "PROACTIVE"
+    minimal_action        = "REPLACE"
+    max_surge_percent     = 0
+    max_unavailable_fixed = 2
+    replacement_method    = "RECREATE"
+}
 
   target_pools = ["${google_compute_target_pool.compute.self_link}"]
   target_size = "${var.mig_size}"

@@ -1,16 +1,24 @@
+variable "service-account" {
+  description = "the service account with right permissions to work on the project specified below"
+  default = "terraform-learn-id-1-sa.json"
+}
+variable "project" {
+  description = "The base project where this module works."
+  default = "terraform-learn-321814"
+}
 variable region {
   description = "Region for managed instance group"
-  default = "us-central1"
+  default = "asia-southeast1"
 }
 
 variable zone {
   description = "Zone for managed instance groups"
-  default = "us-central1-f"
+  default = "asia-southeast1-b"
 }
 
 variable mig_name {
   description = "Name of the managed instance group"
-  default = "my-group"
+  default = "my-test-group"
 }
 
 variable mig_size {
@@ -30,7 +38,7 @@ variable compute_machine_type {
 
 variable compute_image {
   description = "Image used for compute VMs"
-  default = "ubuntu-1604-xenial-v20170328"
+  default = "centos-7"
 }
 
 variable service_port {
